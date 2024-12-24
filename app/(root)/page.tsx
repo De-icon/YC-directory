@@ -1,6 +1,29 @@
 
 import SearchForm from "@/components/SearchForm";
 import StartupCard from "@/components/StartupCard";
+// import { STARTUPS_QUERY } from "@/sanity/lib/queries";
+import { client } from '@/lib/sanity.client'
+
+async function getStartups() {
+  const query = `*[_type == "startup" && defined(slug.current)] | order(_createdAt desc) {
+    _id,
+    title,
+    slug,
+    _createdAt,
+    author->{
+      _id,
+      name,
+      image,
+      bio
+    },
+    views,
+    description,
+    category,
+    image
+  }`
+  
+  return client.fetch(query)
+}
 
 
 export default async function Home({ searchParams }: 
@@ -9,18 +32,9 @@ export default async function Home({ searchParams }:
 
 
   const query = (await searchParams).query;
+  const posts = await getStartups()
+  console.log(posts)
 
-  const posts = [{
-    _createAt: new Date(),
-    views: 55,
-    author: { _id: 1, name: "John Doe" },
-    _id: 1,
-    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum.",
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_wG5i3f3QurxvtO5B7J3A98S6Ujn9SI90mWxTNaPWOdwGQGzjZm2VFm91mGFU6vz_C2U&usqp=CAU",
-    title: "We Robot",
-    category: "Robotics",
-
-  }]
 
   return (
     <>
